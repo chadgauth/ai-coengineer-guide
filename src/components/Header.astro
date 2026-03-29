@@ -2,7 +2,8 @@
 import { SITE_TITLE } from '../consts';
 
 const pathname = Astro.url.pathname;
-const base = import.meta.env.BASE_URL;
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 
 // Ensure we don't misclassify the exact /blog or /blog/ root as a post
 const isBlogIndex = pathname === `${base}blog` || pathname === `${base}blog/`;
