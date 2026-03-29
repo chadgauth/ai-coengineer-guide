@@ -1,0 +1,113 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import TagList from '../components/TagList.astro';
+import FileTree from '../components/FileTree.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, tags } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const parts = pathname.split('/').filter(Boolean);
+const slug = parts[parts.length - 1];
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={`${title} | AI Co-Engineer Guide`} description={description} />
+		<style>
+			.post-header {
+				margin-bottom: 2.5rem;
+				padding-bottom: 2rem;
+				border-bottom: 1px solid var(--border);
+			}
+			.breadcrumbs {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				margin-bottom: 1rem;
+				font-size: 0.85rem;
+				color: var(--text-secondary);
+				font-family: 'JetBrains Mono', monospace;
+			}
+			.breadcrumbs .separator {
+				opacity: 0.5;
+			}
+			.breadcrumbs .current-file {
+				color: var(--accent);
+			}
+			.file-icon {
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+				mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 2H1.5L.5 3v10l1 1h13l1-1V3l-1-1zm-10 9H3V6h1.5l1.25 2.5L7 6h1.5v5H7V8.5L5.75 11h-1.5L3 8.5v2.5zm6.5 0l-2.5-3h1.5V6h2v2h1.5l-2.5 3z"/></svg>') no-repeat center / contain;
+				-webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 2H1.5L.5 3v10l1 1h13l1-1V3l-1-1zm-10 9H3V6h1.5l1.25 2.5L7 6h1.5v5H7V8.5L5.75 11h-1.5L3 8.5v2.5zm6.5 0l-2.5-3h1.5V6h2v2h1.5l-2.5 3z"/></svg>') no-repeat center / contain;
+				background-color: var(--text-secondary);
+			}
+			.post-header h1 {
+				margin-bottom: 0.75rem;
+			}
+			.post-description {
+				color: var(--text-secondary);
+				font-size: 1.1rem;
+				line-height: 1.6;
+				margin: 0;
+			}
+			.post-tags {
+				margin-top: 1rem;
+			}
+			.prose {
+				color: var(--text);
+			}
+			.prose :global(h2) {
+				margin-top: 3rem;
+			}
+			.prose :global(h3) {
+				margin-top: 2rem;
+			}
+			.prose :global(a) {
+				text-decoration: underline;
+				text-underline-offset: 3px;
+			}
+			.updated {
+				font-style: italic;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<div class="layout-container">
+			<FileTree />
+			<main>
+				<article>
+					<div class="post-header">
+						<div class="breadcrumbs">
+							<span>AI-COENGINEER-GUIDE</span>
+							<span class="separator">›</span>
+							<span>docs</span>
+							<span class="separator">›</span>
+							<span>rules</span>
+							<span class="separator">›</span>
+							<span class="file-icon"></span>
+							<span class="current-file">{slug}.md</span>
+						</div>
+						<h1>{title}</h1>
+						<p class="post-description">{description}</p>
+						<div class="post-tags">
+							<TagList tags={tags} />
+						</div>
+					</div>
+					<div class="prose">
+						<slot />
+					</div>
+				</article>
+			</main>
+		</div>
+		<Footer />
+	</body>
+</html>

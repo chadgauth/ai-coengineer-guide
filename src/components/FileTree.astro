@@ -1,0 +1,219 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => (a.data.order ?? 99) - (b.data.order ?? 99),
+);
+const base = import.meta.env.BASE_URL;
+
+// We will simulate a directory structure
+// root -> .claude, .cursor, docs, src
+---
+
+<div class="file-tree">
+	<div class="explorer-header">EXPLORER</div>
+	
+	<!-- System Actions -->
+	<div class="system-actions">
+		<a href={`${base}blog/the-setup-bot/`} class="sync-button">
+			<span class="file-icon markdown" style="background-color: var(--accent);"></span> SYNC TO WORKSPACE
+		</a>
+	</div>
+
+	<div class="folder open">
+		<div class="folder-title">
+			<span class="chevron">▼</span> <span class="folder-icon">🗂️</span> AI-COENGINEER-GUIDE
+		</div>
+		<div class="folder-content">
+            <a href={`${base}`} class:list={['file-item', { active: Astro.url.pathname === base }]} style="padding-left: 24px;">
+                <span class="file-icon markdown"></span> README.md
+            </a>
+			<!-- .claude / agents folder -->
+			<div class="folder open">
+				<div class="folder-title" style="padding-left: 12px;" title="Instructions for Claude Desktop and CLI">
+					<span class="chevron">▼</span> <span class="folder-icon">🗂️</span> .claude <span class="folder-label">[CLAUDE CONTEXT]</span>
+				</div>
+				<div class="folder-content" style="padding-left: 12px;">
+					<a href={`${base}blog/the-setup-bot/`} class="file-item" style="padding-left: 36px;">
+						<span class="file-icon markdown"></span> CLAUDE.md
+					</a>
+				</div>
+			</div>
+
+			<!-- .cursor folder -->
+			<div class="folder open">
+				<div class="folder-title" style="padding-left: 12px;" title="Cursor-specific rules and agents">
+					<span class="chevron">▼</span> <span class="folder-icon">🗂️</span> .cursor <span class="folder-label">[IDE RULES]</span>
+				</div>
+				<div class="folder-content" style="padding-left: 12px;">
+					<a href={`${base}blog/file-structure-symlinks/`} class="file-item" style="padding-left: 36px;">
+						<span class="file-icon git"></span> rules/
+					</a>
+                    <a href={`${base}blog/specialized-agents/`} class="file-item" style="padding-left: 36px;">
+						<span class="file-icon git"></span> agents/
+					</a>
+				</div>
+			</div>
+
+			<!-- .github folder -->
+			<div class="folder open">
+				<div class="folder-title" style="padding-left: 12px;" title="Instructions for GitHub Copilot">
+					<span class="chevron">▼</span> <span class="folder-icon">🗂️</span> .github <span class="folder-label">[COPILOT]</span>
+				</div>
+				<div class="folder-content" style="padding-left: 12px;">
+					<a href={`${base}blog/file-structure-symlinks/`} class="file-item" style="padding-left: 36px;">
+						<span class="file-icon markdown"></span> copilot-instructions.md
+					</a>
+				</div>
+			</div>
+
+			<!-- docs/rules folder -->
+			<div class="folder open">
+				<div class="folder-title" style="padding-left: 12px;" title="Canonical root for all AI rules (The Source of Truth)">
+					<span class="chevron">▼</span> <span class="folder-icon">🗂️</span> docs <span class="folder-label">[TRUTH]</span>
+				</div>
+				<div class="folder-content" style="padding-left: 12px;">
+                    <div class="folder open">
+                        <div class="folder-title" style="padding-left: 24px;">
+                            <span class="chevron">▼</span> <span class="folder-icon">🗂️</span> rules
+                        </div>
+                        <div class="folder-content" style="padding-left: 12px;">
+                            {posts.map(post => (
+                                <a href={`${base}blog/${post.id}/`} class:list={['file-item', { active: Astro.url.pathname.includes(post.id) }]} style="padding-left: 48px;">
+                                    <span class="file-icon markdown"></span> {post.id}.md
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.file-tree {
+		width: var(--sidebar-width);
+		background: var(--surface);
+		height: 100%;
+		border-right: 1px solid var(--border);
+		overflow-y: auto;
+		flex-shrink: 0;
+		font-family: 'Segoe WPC', 'Segoe UI', sans-serif;
+		font-size: 13px;
+		color: #cccccc;
+        padding-bottom: 20px;
+	}
+    
+    /* Hide scrollbar */
+	.file-tree::-webkit-scrollbar {
+		width: 10px;
+	}
+    .file-tree::-webkit-scrollbar-track {
+        background: var(--surface);
+    }
+    .file-tree::-webkit-scrollbar-thumb {
+        background: #424242;
+    }
+    .file-tree:hover::-webkit-scrollbar-thumb {
+        background: #4f4f4f;
+    }
+
+	.explorer-header {
+		padding: 10px 20px;
+		font-size: 11px;
+		letter-spacing: 0.5px;
+		color: var(--text-secondary);
+        font-weight: 600;
+	}
+
+	.folder-title, .file-item {
+		display: flex;
+		align-items: center;
+		padding: 4px 0;
+		cursor: pointer;
+		user-select: none;
+        white-space: nowrap;
+        text-decoration: none;
+        color: inherit;
+	}
+    
+    .folder-title {
+        padding-left: 4px;
+    }
+
+	.folder-title:hover, .file-item:hover {
+		background: var(--surface-raised);
+	}
+    
+    .file-item.active {
+        background: #37373d;
+        color: #ffffff;
+    }
+
+	.chevron {
+		font-size: 8px;
+		margin-right: 6px;
+        width: 12px;
+        text-align: center;
+	}
+
+	.folder-icon {
+		margin-right: 6px;
+		font-size: 14px;
+        filter: grayscale(0.5);
+	}
+
+	.file-icon {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		margin-right: 6px;
+        border-radius: 2px;
+	}
+    
+    .file-icon.markdown {
+        background-color: var(--accent-blue);
+        mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 2H1.5L.5 3v10l1 1h13l1-1V3l-1-1zm-10 9H3V6h1.5l1.25 2.5L7 6h1.5v5H7V8.5L5.75 11h-1.5L3 8.5v2.5zm6.5 0l-2.5-3h1.5V6h2v2h1.5l-2.5 3z"/></svg>') no-repeat center / contain;
+        -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 2H1.5L.5 3v10l1 1h13l1-1V3l-1-1zm-10 9H3V6h1.5l1.25 2.5L7 6h1.5v5H7V8.5L5.75 11h-1.5L3 8.5v2.5zm6.5 0l-2.5-3h1.5V6h2v2h1.5l-2.5 3z"/></svg>') no-repeat center / contain;
+    }
+    
+    .file-icon.git {
+        background-color: #f14e32;
+    }
+
+	.folder-label {
+		font-size: 9px;
+		color: var(--accent);
+		margin-left: 8px;
+		opacity: 0.6;
+		font-weight: 700;
+		letter-spacing: 0.5px;
+	}
+
+	.system-actions {
+		padding: 6px 12px;
+		border-bottom: 1px solid var(--border);
+		margin-bottom: 6px;
+	}
+
+	.sync-button {
+		display: flex;
+		align-items: center;
+		padding: 6px 8px;
+		color: var(--text);
+		border-radius: 3px;
+		text-decoration: none;
+		font-weight: 500;
+		font-size: 11px;
+        letter-spacing: 0.5px;
+		transition: background 0.15s, color 0.15s;
+        border: 1px solid transparent;
+	}
+
+	.sync-button:hover {
+		background: var(--surface-raised);
+        color: var(--accent);
+        border: 1px solid var(--border);
+	}
+</style>

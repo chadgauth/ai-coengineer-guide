@@ -1,0 +1,7 @@
+---
+description: General development manifesto and project goals
+globs: *
+---
+
+Read the canonical manifesto here to understand the repository's core goals:
+mdc:docs/rules/manifesto.md
